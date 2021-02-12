@@ -9,8 +9,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 /**
  *
@@ -19,22 +18,23 @@ import java.util.logging.Logger;
 public class App3 {
     public static void main(String[] args) {
         
-        try {
-           Files.walk(path, 1)
-                   .filter(p->!Files.isDirectory(p))
-                   .filter(p->p.g)
-            
-            
-            
-            
+        
+        Path path = FileSystems.getDefault().getPath("");
 
-            Files.list(path)
-                    .map(Path::getFileName)
+        try (Stream<Path> s1 = Files.walk(path, 1);
+                Stream<Path> s2 = Files.list(path)) {
+            //modo ricorsivo
+            s1.filter(p -> !Files.isDirectory(p))
+                    .filter(p -> p.getFileName().toString().endsWith(".txt"))
+                    .forEach(p -> System.out.println(p.getFileName()));
+            //non ricorsivo
+            s2.map(Path::getFileName)
                     .map(Path::toString)
-                    .filter(v->v.endsWith(".txt"))
+                    .filter(v -> v.endsWith(".txt"))
                     .forEach(System.out::println);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
+       
     }
 }
